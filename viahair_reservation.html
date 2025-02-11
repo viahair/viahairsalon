@@ -75,10 +75,10 @@
         .calendar div:hover {
             background-color: #eee;
         }
-.selected {
-    background-color: red !important;  /* 加上 !important */
-    color: white !important;           /* 也加上 !important */
-}
+        .selected {
+            background-color: red !important;  /* 加上 !important */
+            color: white !important;           /* 也加上 !important */
+        }
         .disabled {
             pointer-events: none;
             background-color: #f0f0f0;
@@ -148,6 +148,7 @@
         const daysInMonth = new Date(year, month + 1, 0).getDate();
         const firstDayOfMonth = new Date(year, month, 1).getDay();
         const today = new Date();  // 當天的日期
+        today.setHours(0, 0, 0, 0);  // 只保留日期，不包含時間
         const selectedStylist = document.getElementById("stylist").value;
 
         // 清空月曆
