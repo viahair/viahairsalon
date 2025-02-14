@@ -11,9 +11,6 @@
 
     <!-- 引入 LIFF SDK -->
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
-    <!-- 引入 Supabase 客戶端 -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.0.0/dist/umd/supabase.min.js"></script> 
-    
 
     <style>
         body {
@@ -136,11 +133,6 @@
     <button onclick="submitReservation()">確認送出</button>
 
 <script>
-    // 初始化 Supabase 客戶端
-    const supabaseUrl = 'https://obycigoxkvabsgavelri.supabase.co';  // 您的 Supabase URL
-    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ieWNpZ294a3ZhYnNnYXZlbHJpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzk1MDYwNDgsImV4cCI6MjA1NTA4MjA0OH0.U-eKeuLUFZ3ZDvqqy5cFMFPPOmteWfjanA5XbNZ7Xu8'; // 您的 Supabase Key
-    const supabase = supabase.createClient(supabaseUrl, supabaseKey);
-
     // 設計師的休假日期
     const holidays = {
         "Michelle": ["2025-02-01", "2025-02-02", "2025-02-03", "2025-02-04", "2025-02-05", "2025-02-06", "2025-02-07", "2025-02-08", "2025-02-09","2025-02-12", "2025-02-19", "2025-02-20", "2025-02-26"],
@@ -185,10 +177,10 @@
 
         // 點擊日期選擇
         $(".calendar-day").on('click', function() {
-            console.log("選擇的日期:", $(this).data("date"));  // 輸出選擇的日期
             if (!$(this).hasClass("disabled")) {
                 $(".calendar-day").removeClass("selected");
                 $(this).addClass("selected");
+                const selectedDay = $(this).data("day");
                 const selectedDate = $(this).data("date");
                 $("#selectedDate").val(selectedDate);
             }
@@ -254,30 +246,28 @@
         const remarks = document.getElementById("remarks").value;
 
         if (!stylist || !name || !phone || !service || !date || !time) {
-            alert("有欄位尚未填寫");
+            alert("有欄位未填寫");
             return;
         }
 
-        // 儲存到 Supabase
-        const { data, error } = await supabase.from("reservations").insert([
-            {
-                stylist: stylist,
-                name: name,
-                phone: phone,
-                service: service,
-                date: date,
-                time: time,
-                remarks: remarks
-            }
-        ]);
+        // 格式化日期為 mm/dd 的格式
+        const formattedDate = new Date(date);
+        const month = String(formattedDate.getMonth() + 1).padStart(2, '0');  // 获取月份并补零
+        const day = String(formattedDate.getDate()).padStart(2, '0');  // 获取日期并补零
+        const finalFormattedDate = `${month}/${day}`;
 
-        if (error) {
-            alert("預約失敗: " + error.message);
-            return;
-        }
+        // 最終預約時間格式
+        const finalTime = `${finalFormattedDate} ${time}`;
 
-        alert("預約成功!");
+        const message = `這是您的預約表單\n[待稍候會幫您確認]\n\n設計師    ：${stylist}\n您的姓名：${name}\n您的電話：${phone}\n服務項目：${service}\n預約時間：${finalTime}\n\n備註：\n${remarks}`;
+
+        liff.sendMessages([{ type: "text", text: message }])
+            .then(() => {
+                liff.closeWindow();
+            })
+            .catch(err => console.error("發送訊息錯誤", err));
     }
 </script>
+
 </body>
 </html>
