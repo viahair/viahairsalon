@@ -141,7 +141,6 @@
     const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ieWNpZ294a3ZhYnNnYXZlbHJpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzk1MDYwNDgsImV4cCI6MjA1NTA4MjA0OH0.U-eKeuLUFZ3ZDvqqy5cFMFPPOmteWfjanA5XbNZ7Xu8'; // 您的 Supabase Key
     const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
-    
     // 設計師的休假日期
     const holidays = {
         "Michelle": ["2025-02-01", "2025-02-02", "2025-02-03", "2025-02-04", "2025-02-05", "2025-02-06", "2025-02-07", "2025-02-08", "2025-02-09","2025-02-12", "2025-02-19", "2025-02-20", "2025-02-26"],
@@ -186,10 +185,10 @@
 
         // 點擊日期選擇
         $(".calendar-day").on('click', function() {
+            console.log("選擇的日期:", $(this).data("date"));  // 輸出選擇的日期
             if (!$(this).hasClass("disabled")) {
                 $(".calendar-day").removeClass("selected");
                 $(this).addClass("selected");
-                const selectedDay = $(this).data("day");
                 const selectedDate = $(this).data("date");
                 $("#selectedDate").val(selectedDate);
             }
@@ -255,49 +254,30 @@
         const remarks = document.getElementById("remarks").value;
 
         if (!stylist || !name || !phone || !service || !date || !time) {
-            alert("有欄位未填寫");
+            alert("有欄位尚未填寫");
             return;
         }
 
-        // 格式化日期為 mm/dd 的格式
-        const formattedDate = new Date(date);
-        const month = String(formattedDate.getMonth() + 1).padStart(2, '0');  // 获取月份并补零
-        const day = String(formattedDate.getDate()).padStart(2, '0');  // 获取日期并补零
-        const finalFormattedDate = `${month}/${day}`;
-
-        // 最終預約時間格式
-        const finalTime = `${finalFormattedDate} ${time}`;
-
-        const message = `這是您的預約表單\n[待稍候會幫您確認]\n\n設計師    ：${stylist}\n您的姓名：${name}\n您的電話：${phone}\n服務項目：${service}\n預約時間：${finalTime}\n\n備註：\n${remarks}`;
-
-        // 儲存到 Supabase 資料庫
-        const { data, error } = await supabase
-            .from('reservations')  // 請確保您的表格名稱為 'reservations'
-            .insert([
-                {
-                    stylist: stylist,
-                    name: name,
-                    phone: phone,
-                    service: service,
-                    date: date,
-                    time: time,
-                    remarks: remarks
-                }
-            ]);
+        // 儲存到 Supabase
+        const { data, error } = await supabase.from("reservations").insert([
+            {
+                stylist: stylist,
+                name: name,
+                phone: phone,
+                service: service,
+                date: date,
+                time: time,
+                remarks: remarks
+            }
+        ]);
 
         if (error) {
-            console.error("儲存資料錯誤", error);
-            alert("儲存資料時發生錯誤！");
+            alert("預約失敗: " + error.message);
             return;
         }
-        // 發送訊息至 LINE
-        liff.sendMessages([{ type: "text", text: message }])
-            .then(() => {
-                liff.closeWindow();
-            })
-            .catch(err => console.error("發送訊息錯誤", err));
+
+        alert("預約成功!");
     }
 </script>
-
 </body>
 </html>
