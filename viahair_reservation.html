@@ -6,11 +6,11 @@
     <title>𝑣𝑖𝑎 ℎ𝑎𝑖𝑟 𝑠𝑎𝑙𝑜𝑛</title>
     
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@200..900&display=swap" rel="stylesheet">
-
     <!-- 引入 LIFF SDK -->
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    <!-- 引入 Supabase 客戶端 -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.0.0/dist/umd/supabase.min.js"></script> 
 
     <style>
         body {
@@ -133,6 +133,11 @@
     <button onclick="submitReservation()">確認送出</button>
 
 <script>
+    // 初始化 Supabase 客戶端
+    const supabaseUrl = 'https://obycigoxkvabsgavelri.supabase.co';  // 您的 Supabase URL
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ieWNpZ294a3ZhYnNnYXZlbHJpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzk1MDYwNDgsImV4cCI6MjA1NTA4MjA0OH0.U-eKeuLUFZ3ZDvqqy5cFMFPPOmteWfjanA5XbNZ7Xu8'; // 您的 Supabase Key
+    const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+    
     // 設計師的休假日期
     const holidays = {
         "Michelle": ["2025-02-01", "2025-02-02", "2025-02-03", "2025-02-04", "2025-02-05", "2025-02-06", "2025-02-07", "2025-02-08", "2025-02-09","2025-02-12", "2025-02-19", "2025-02-20", "2025-02-26"],
@@ -248,6 +253,28 @@
             alert("有欄位未填寫");
             return;
         }
+
+        // 儲存到 Supabase
+        const { data, error } = await supabase.from("reservations").insert([
+            {
+                stylist: stylist,
+                name: name,
+                phone: phone,
+                service: service,
+                date: date,
+                time: time,
+                remarks: remarks
+            }
+        ]);
+
+        if (error) {
+            alert("預約失敗: " + error.message);
+            return;
+        }
+
+        alert("預約成功!");
+    }
+
 
         // 格式化日期為 mm/dd 的格式
         const formattedDate = new Date(date);
