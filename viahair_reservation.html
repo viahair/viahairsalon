@@ -255,25 +255,25 @@
         }
 
         // 儲存到 Supabase
-        const { data, error } = await supabase.from("reservations").insert([
-            {
-                stylist: stylist,
-                name: name,
-                phone: phone,
-                service: service,
-                date: date,
-                time: time,
-                remarks: remarks
-            }
-        ]);
+       // const { data, error } = await supabase.from("reservations").insert([
+        //    {
+         //       stylist: stylist,
+          //      name: name,
+          //      phone: phone,
+          //      service: service,
+          //      date: date,
+           //     time: time,
+            //    remarks: remarks
+          //  }
+       // ]);
 
-        if (error) {
-            alert("預約失敗: " + error.message);
-            return;
-        }
+       // if (error) {
+         //   alert("預約失敗: " + error.message);
+           // return;
+       // }
 
-        alert("預約成功!");
-    }
+        //alert("預約成功!");
+   // }
 
 
         // 格式化日期為 mm/dd 的格式
