@@ -7,9 +7,7 @@
     
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@200..900&display=swap" rel="stylesheet">
-    <!-- 引入 LIFF SDK -->
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
-    <!-- 引入 Supabase 客戶端 -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.0.0/dist/umd/supabase.min.js"></script> 
 
     <style>
@@ -76,8 +74,8 @@
             background-color: #eee;
         }
         .selected {
-            background-color: red !important;  /* 加上 !important */
-            color: white !important;           /* 也加上 !important */
+            background-color: red !important;
+            color: white !important;
         }
         .disabled {
             pointer-events: none;
@@ -95,7 +93,7 @@
     </style>
 </head>
 <body> 
-    <h2>Michelle  預 約 表 單</h2>
+    <h2>Michelle 預 約 表 單</h2>
   
     <label for="stylist">* 設 計 師</label>
     <select id="stylist">
@@ -133,88 +131,77 @@
     <button onclick="submitReservation()">確認送出</button>
 
 <script>
-    window.addEventListener("DOMContentLoaded", (event) => {
-        // 初始化 Supabase 客戶端
+    window.addEventListener("DOMContentLoaded", () => {
         const supabaseUrl = 'https://obycigoxkvabsgavelri.supabase.co';  // 您的 Supabase URL
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ieWNpZ294a3ZhYnNnYXZlbHJpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzk1MDYwNDgsImV4cCI6MjA1NTA4MjA0OH0.U-eKeuLUFZ3ZDvqqy5cFMFPPOmteWfjanA5XbNZ7Xu8'; // 您的 Supabase Key
         const supabase = supabase.createClient(supabaseUrl, supabaseKey);
-        
-        // 設計師的休假日期
+
+        // 設定設計師的休假日期
         const holidays = {
             "Michelle": ["2025-02-01", "2025-02-02", "2025-02-03", "2025-02-04", "2025-02-05", "2025-02-06", "2025-02-07", "2025-02-08", "2025-02-09","2025-02-12", "2025-02-19", "2025-02-20", "2025-02-26"],
         };
 
-        // 初始化月曆
+        // 初始化日曆
         function generateCalendar() {
             const now = new Date();
             const month = now.getMonth();
             const year = now.getFullYear();
             const daysInMonth = new Date(year, month + 1, 0).getDate();
             const firstDayOfMonth = new Date(year, month, 1).getDay();
-            const today = new Date();  // 當天的日期
-            today.setHours(0, 0, 0, 0);  // 只保留日期，不包含時間
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
             const selectedStylist = document.getElementById("stylist").value;
 
-            // 清空月曆
             $('#calendar').empty();
 
-            // 顯示週日到週六
+            // 顯示星期
             const daysOfWeek = ["日", "一", "二", "三", "四", "五", "六"];
             daysOfWeek.forEach(day => {
                 $('#calendar').append(`<div style="text-align:center; font-weight:bold">${day}</div>`);
             });
 
-            // 空白填充，確保日期排正確
+            // 填充空白，確保日期排正確
             for (let i = 0; i < firstDayOfMonth; i++) {
                 $('#calendar').append('<div></div>');
             }
 
-            // 填充日期並設置禁用過去的日期和休假日期
+            // 填充日期
             for (let day = 1; day <= daysInMonth; day++) {
                 const date = new Date(year, month, day);
-                const isPastDate = date < today; // 判斷是否是過去的日期
+                const isPastDate = date < today;
                 const formattedDate = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
                 const isHoliday = holidays[selectedStylist] && holidays[selectedStylist].includes(formattedDate);
-                const className = isPastDate || isHoliday ? 'disabled' : 'calendar-day'; // 給過去的日期和休假日期加上禁用樣式
+                const className = isPastDate || isHoliday ? 'disabled' : 'calendar-day';
 
                 $('#calendar').append(`<div class="${className}" data-day="${day}" data-date="${formattedDate}">${day}</div>`);
             }
 
-            // 點擊日期選擇
             $(".calendar-day").on('click', function() {
                 if (!$(this).hasClass("disabled")) {
                     $(".calendar-day").removeClass("selected");
                     $(this).addClass("selected");
-                    const selectedDay = $(this).data("day");
                     const selectedDate = $(this).data("date");
                     $("#selectedDate").val(selectedDate);
                 }
             });
-
-            // 禁用過去的日期和休假日期樣式
-            $(".disabled").css({
-                "pointer-events": "none",
-                "background-color": "#f0f0f0",
-                "color": "#ccc"
-            });
         }
 
-        // 生成時間選擇方塊
+        // 生成時間選項
         function generateTimeOptions() {
-            const startTime = 10; // 9:00
-            const endTime = 17; // 17:30
+            const startTime = 10;
+            const endTime = 17;
             const timeSelect = document.getElementById("time");
 
-            // 清空時間選項
             timeSelect.innerHTML = "";
 
             for (let hour = startTime; hour <= endTime; hour++) {
-                const hour24 = String(hour).padStart(2, '0'); // 確保時間格式是24小時，並補足前導零
+                const hour24 = String(hour).padStart(2, '0');
                 const times = [
-                    `${hour24}:00`,  // 以24小時制顯示
-                    `${hour24}:30`   // 以24小時制顯示
+                    `${hour24}:00`,
+                    `${hour24}:30`
                 ];
-                
+
                 times.forEach(time => {
                     const option = document.createElement("option");
                     option.value = time;
@@ -224,13 +211,12 @@
             }
         }
 
-        
-        // 設置設計師選擇事件，更新月曆
+        // 設計師選擇事件
         $('#stylist').change(function() {
             generateCalendar();
         });
 
-        // 預設初始化月曆和時間選擇
+        // 初始化
         generateCalendar();
         generateTimeOptions();
     });
