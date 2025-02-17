@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>via 預約表單</title>
+    <title>𝑣𝑖𝑎 ℎ𝑎𝑖𝑟 𝑠𝑎𝑙𝑜𝑛</title>
     
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     
@@ -20,14 +20,14 @@
             padding: 20px;
             background-color: #f9f9f9;
         }
-        h2 {
-            text-align: center;
-            color: #333;
-        }
         label {
             display: block;
             margin-top: 10px;
             font-weight: bold;
+        }
+        h2 {
+            text-align: center;
+            color: #333;
         }
         input, select, textarea {
             width: 100%;
@@ -76,8 +76,8 @@
             background-color: #eee;
         }
         .selected {
-            background-color: #333;
-            color: white;
+            background-color: red !important;  /* 加上 !important */
+            color: white !important;           /* 也加上 !important */
         }
         .disabled {
             pointer-events: none;
@@ -94,40 +94,40 @@
         }
     </style>
 </head>
-<body>
-    <h2>via 預約表單</h2>
-
-    <label for="stylist">設計師</label>
+<body> 
+    <h2>via 預 約 表 單</h2>
+  
+    <label for="stylist">* 設 計 師</label>
     <select id="stylist">
         <option value="" selected>請選擇設計師</option>
+        <option value="不指定設計師">不指定設計師</option>
         <option value="Michelle">Michelle</option>
         <option value="Mia">Mia</option>
-        <option value="不指定設計師">不指定設計師</option>
     </select>
 
-    <label for="date">預約日期</label>
+    <label for="date">* 預 約 日 期</label>
     <div class="calendar-container">
         <div id="calendar" class="calendar"></div>
         <input type="hidden" id="selectedDate">
     </div>
     
-    <label for="time">預約時間</label>
+    <label for="time">* 預 約 時 間</label>
     <div class="time-select-container">
         <select id="time" class="time-select">
             <!-- 時間選擇選項將在 JavaScript 生成 -->
         </select>
     </div>
 
-    <label for="name">您的姓名</label>
+    <label for="name">* 您 的 姓 名</label>
     <input type="text" id="name" placeholder="">
 
-    <label for="phone">您的電話</label>
+    <label for="phone">* 您 的 電 話</label>
     <input type="text" id="phone" placeholder="">
 
-    <label for="service">服務項目</label>
+    <label for="service">* 服 務 項 目</label>
     <input type="text" id="service" placeholder="">
 
-    <label for="remarks">備註</label>
+    <label for="remarks">備 註</label>
     <textarea id="remarks" rows="2" placeholder=""></textarea>
 
     <button onclick="submitReservation()">確認送出</button>
@@ -148,6 +148,7 @@
         const daysInMonth = new Date(year, month + 1, 0).getDate();
         const firstDayOfMonth = new Date(year, month, 1).getDay();
         const today = new Date();  // 當天的日期
+        today.setHours(0, 0, 0, 0);  // 只保留日期，不包含時間
         const selectedStylist = document.getElementById("stylist").value;
 
         // 清空月曆
@@ -196,7 +197,7 @@
 
     // 生成時間選擇方塊
     function generateTimeOptions() {
-        const startTime = 9; // 9:00
+        const startTime = 10; // 9:00
         const endTime = 17; // 17:30
         const timeSelect = document.getElementById("time");
 
@@ -230,7 +231,7 @@
 
     // 提交預約
     async function submitReservation() {
-        await liff.init({ liffId: "2006867121-OlgLV60n" });
+        await liff.init({ liffId: "2006886942-gQ2J88nv" });
 
         if (!liff.isLoggedIn()) {
             liff.login();
@@ -241,7 +242,7 @@
         const name = document.getElementById("name").value;
         const phone = document.getElementById("phone").value;
         const service = document.getElementById("service").value;
-        const date = document.getElementById("selectedDate").value; // 获取选择的日期
+        const date = document.getElementById("selectedDate").value; // 選擇的日期
         const time = document.getElementById("time").value;
         const remarks = document.getElementById("remarks").value;
 
@@ -252,8 +253,8 @@
 
         // 格式化日期為 mm/dd 的格式
         const formattedDate = new Date(date);
-        const month = String(formattedDate.getMonth() + 1).padStart(2, '0');  // 获取月份并补零
-        const day = String(formattedDate.getDate()).padStart(2, '0');  // 获取日期并补零
+        const month = String(formattedDate.getMonth() + 1).padStart(2, '0');  // 月份補0
+        const day = String(formattedDate.getDate()).padStart(2, '0');  // 日期補0
         const finalFormattedDate = `${month}/${day}`;
 
         // 最終預約時間格式
