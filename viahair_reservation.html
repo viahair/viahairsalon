@@ -3,12 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>𝑣𝑖𝑎 ℎ𝑎𝑖𝑟 𝑠𝑎𝑙𝑜𝑛</title>
+    <title>𝐯𝐢𝐚 の 預 約 表 單</title>
     
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@200..900&display=swap" rel="stylesheet">
-
     <!-- 引入 LIFF SDK -->
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 
@@ -24,10 +22,6 @@
             display: block;
             margin-top: 10px;
             font-weight: bold;
-        }
-        h2 {
-            text-align: center;
-            color: #333;
         }
         input, select, textarea {
             width: 100%;
@@ -56,6 +50,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            position: relative;
         }
         .calendar {
             display: grid;
@@ -76,8 +71,8 @@
             background-color: #eee;
         }
         .selected {
-            background-color: red !important;  /* 加上 !important */
-            color: white !important;           /* 也加上 !important */
+            background-color: red !important;
+            color: white !important;
         }
         .disabled {
             pointer-events: none;
@@ -90,12 +85,29 @@
             margin-top: 15px;
         }
         .time-select {
-            width: 48%;
+            width: 100%;
+        }
+        /* 月份顯示與箭頭對齊樣式 */
+        .month-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 10px;
+        }
+        .arrow-button {
+            font-size: 20px;
+            cursor: pointer;
+            user-select: none;
+            margin: 0 20px;
+            color: #007bff;
+        }
+        .month-text {
+            font-size: 18px;
+            font-weight: bold;
         }
     </style>
 </head>
 <body> 
-    <h2>via 預 約 表 單</h2>
   
     <label for="stylist">* 設 計 師</label>
     <select id="stylist">
@@ -107,6 +119,13 @@
 
     <label for="date">* 預 約 日 期</label>
     <div class="calendar-container">
+        <div class="month-container">
+            <!-- 月份顯示與箭頭 -->
+            <span class="arrow-button" id="prev-month">&#9664;</span>
+            <span class="month-text" id="month-display">2月</span>
+            <span class="arrow-button" id="next-month">&#9654;</span>
+        </div>
+
         <div id="calendar" class="calendar"></div>
         <input type="hidden" id="selectedDate">
     </div>
@@ -124,27 +143,44 @@
     <label for="phone">* 您 的 電 話</label>
     <input type="text" id="phone" placeholder="">
 
-    <label for="service">* 服 務 項 目</label>
-    <input type="text" id="service" placeholder="">
+<label for="service">* 服 務 項 目</label>
+<select id="service">
+    <option value="" selected disabled>請選擇服務項目</option>
+    <option value="洗髮">[洗髮]:造型+基礎保養</option>
+    <option value="剪髮">[剪髮]:洗+基礎保養</option>
+    <option value="兒童剪髮">[兒童剪髮]:可洗或不洗</option>    
+    <option value="染髮">[染髮]:洗髮+基礎保養</option>
+    <option value="補髮根">[補髮根]:洗髮+基礎保養</option>    
+    <option value="燙髮">[燙髮]:剪髮+基礎保養</option>
+    <option value="護髮">[護髮]:洗髮+深層保養</option>
+    <option value="頭皮">[頭皮]:洗髮+基礎保養</option>
+    <option value="其它">[其他]:在下方備註填寫</option>
+</select>
 
     <label for="remarks">備 註</label>
-    <textarea id="remarks" rows="2" placeholder=""></textarea>
+    <textarea id="remarks" rows="2" placeholder="若選擇 '其它'，請在此填寫"></textarea>
 
     <button onclick="submitReservation()">確認送出</button>
 
 <script>
     // 設計師的休假日期
     const holidays = {
-        "Michelle": ["2025-02-01", "2025-02-02", "2025-02-03", "2025-02-04", "2025-02-05", "2025-02-06", "2025-02-07", "2025-02-08", "2025-02-09","2025-02-12", "2025-02-19", "2025-02-20", "2025-02-26"],
+        "Michelle": [
+            "2025-02-01", "2025-02-02", "2025-02-03", "2025-02-04", "2025-02-05", "2025-02-06", "2025-02-07", "2025-02-08", "2025-02-09",
+            "2025-02-12", "2025-02-19", "2025-02-20", "2025-02-26",
+            "2025-03-02", "2025-03-03", "2025-03-04", "2025-03-11", "2025-03-12", "2025-03-19", "2025-03-22", "2025-03-23", "2025-03-26", "2025-03-27"
+        ],
         "Mia": ["2025-02-01", "2025-02-02", "2025-02-13", "2025-02-14", "2025-02-15", "2025-02-21", "2025-02-26", "2025-02-27"],
         "不指定設計師": ["2025-02-01", "2025-02-02", "2025-02-26"]
     };
 
-    // 初始化月曆
+    let currentMonth = new Date().getMonth();
+    let currentYear = new Date().getFullYear();
+
+    // 更新月曆
     function generateCalendar() {
-        const now = new Date();
-        const month = now.getMonth();
-        const year = now.getFullYear();
+        const month = currentMonth;
+        const year = currentYear;
         const daysInMonth = new Date(year, month + 1, 0).getDate();
         const firstDayOfMonth = new Date(year, month, 1).getDay();
         const today = new Date();  // 當天的日期
@@ -157,7 +193,7 @@
         // 顯示週日到週六
         const daysOfWeek = ["日", "一", "二", "三", "四", "五", "六"];
         daysOfWeek.forEach(day => {
-            $('#calendar').append(`<div style="text-align:center; font-weight:bold">${day}</div>`);
+            $('#calendar').append('<div style="text-align:center; font-weight:bold">' + day + '</div>');
         });
 
         // 空白填充，確保日期排正確
@@ -187,18 +223,31 @@
             }
         });
 
-        // 禁用過去的日期和休假日期樣式
-        $(".disabled").css({
-            "pointer-events": "none",
-            "background-color": "#f0f0f0",
-            "color": "#ccc"
-        });
+        // 更新月份顯示
+        document.getElementById("month-display").textContent = `${month + 1} 月`;
     }
+
+    // 切換月份
+    $("#prev-month").click(function() {
+        currentMonth = (currentMonth === 0) ? 11 : currentMonth - 1;
+        if (currentMonth === 11) {
+            currentYear--;
+        }
+        generateCalendar();
+    });
+
+    $("#next-month").click(function() {
+        currentMonth = (currentMonth === 11) ? 0 : currentMonth + 1;
+        if (currentMonth === 0) {
+            currentYear++;
+        }
+        generateCalendar();
+    });
 
     // 生成時間選擇方塊
     function generateTimeOptions() {
-        const startTime = 10; // 9:00
-        const endTime = 17; // 17:30
+        const startTime = 10; // 10:00
+        const endTime = 18; // 18:00
         const timeSelect = document.getElementById("time");
 
         // 清空時間選項
@@ -210,6 +259,11 @@
                 `${hour24}:00`,  // 以24小時制顯示
                 `${hour24}:30`   // 以24小時制顯示
             ];
+
+        // 移除 18:30 時段
+        if (hour === 18) {
+            times.pop(); // 只保留到 18:00
+        }            
             
             times.forEach(time => {
                 const option = document.createElement("option");
@@ -225,10 +279,10 @@
         generateCalendar();
     });
 
-    // 預設初始化月曆和時間選擇
+    
+    // 預設初始化月曆
     generateCalendar();
     generateTimeOptions();
-
     // 提交預約
     async function submitReservation() {
         await liff.init({ liffId: "2006886942-gQ2J88nv" });
