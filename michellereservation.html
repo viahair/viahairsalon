@@ -229,8 +229,8 @@
 
     // 生成時間選擇方塊
     function generateTimeOptions() {
-        const startTime = 10; // 9:00
-        const endTime = 18; // 17:30
+        const startTime = 10; // 10:00
+        const endTime = 18; // 18:00
         const timeSelect = document.getElementById("time");
 
         // 清空時間選項
@@ -242,6 +242,11 @@
                 `${hour24}:00`,  // 以24小時制顯示
                 `${hour24}:30`   // 以24小時制顯示
             ];
+
+        // 移除 18:30 時段
+        if (hour === 18) {
+            times.pop(); // 只保留到 18:00
+        }            
             
             times.forEach(time => {
                 const option = document.createElement("option");
