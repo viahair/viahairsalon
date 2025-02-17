@@ -232,8 +232,37 @@
         generateCalendar();
     });
 
-    // 預設初始化月曆
+    // 生成時間選擇方塊
+    function generateTimeOptions() {
+        const startTime = 10; // 9:00
+        const endTime = 17; // 17:30
+        const timeSelect = document.getElementById("time");
+
+        // 清空時間選項
+        timeSelect.innerHTML = "";
+
+        for (let hour = startTime; hour <= endTime; hour++) {
+            const hour24 = String(hour).padStart(2, '0'); // 確保時間格式是24小時，並補足前導零
+            const times = [
+                `${hour24}:00`,  // 以24小時制顯示
+                `${hour24}:30`   // 以24小時制顯示
+            ];
+            
+            times.forEach(time => {
+                const option = document.createElement("option");
+                option.value = time;
+                option.text = time;
+                timeSelect.appendChild(option);
+            });
+        }
+    }
+
+
+    
+
+    // 預設初始化月曆和時間選擇
     generateCalendar();
+    generateTimeOptions();
 
     // 提交預約
     async function submitReservation() {
