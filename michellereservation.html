@@ -90,6 +90,14 @@
         .time-select {
             width: 48%;
         }
+        .month-switch {
+            font-size: 18px;
+            cursor: pointer;
+            padding: 5px;
+            background-color: #f9f9f9;
+            border: none;
+            margin-left: 10px;
+        }
     </style>
 </head>
 <body> 
@@ -102,6 +110,11 @@
 
     <label for="date">* 預 約 日 期</label>
     <div class="calendar-container">
+        <div style="display: flex; align-items: center;">
+            <button class="month-switch" id="prevMonth">&lt;</button>
+            <div id="calendar-month" style="font-size: 18px; margin: 0 10px;">2025年2月</div>
+            <button class="month-switch" id="nextMonth">&gt;</button>
+        </div>
         <div id="calendar" class="calendar"></div>
         <input type="hidden" id="selectedDate">
     </div>
@@ -128,18 +141,23 @@
     <button onclick="submitReservation()">確認送出</button>
 
 <script>
+    let currentMonth = new Date().getMonth();
+    let currentYear = new Date().getFullYear();
+
     // 設計師的休假日期
     const holidays = {
         "Michelle": ["2025-02-01", "2025-02-02", "2025-02-03", "2025-02-04", "2025-02-05", "2025-02-06", "2025-02-07", "2025-02-08", "2025-02-09","2025-02-12", "2025-02-19", "2025-02-20", "2025-02-26"],
     };
 
+    function updateCalendarHeader() {
+        const monthName = new Date(currentYear, currentMonth).toLocaleString('default', { month: 'long' });
+        document.getElementById("calendar-month").innerText = `${currentYear}年${monthName}`;
+    }
+
     // 初始化月曆
     function generateCalendar() {
-        const now = new Date();
-        const month = now.getMonth();
-        const year = now.getFullYear();
-        const daysInMonth = new Date(year, month + 1, 0).getDate();
-        const firstDayOfMonth = new Date(year, month, 1).getDay();
+        const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+        const firstDayOfMonth = new Date(currentYear, currentMonth, 1).getDay();
         const today = new Date();  // 當天的日期
         today.setHours(0, 0, 0, 0);  // 只保留日期，不包含時間
         const selectedStylist = document.getElementById("stylist").value;
@@ -160,9 +178,9 @@
 
         // 填充日期並設置禁用過去的日期和休假日期
         for (let day = 1; day <= daysInMonth; day++) {
-            const date = new Date(year, month, day);
+            const date = new Date(currentYear, currentMonth, day);
             const isPastDate = date < today; // 判斷是否是過去的日期
-            const formattedDate = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+            const formattedDate = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
             const isHoliday = holidays[selectedStylist] && holidays[selectedStylist].includes(formattedDate);
             const className = isPastDate || isHoliday ? 'disabled' : 'calendar-day'; // 給過去的日期和休假日期加上禁用樣式
 
@@ -178,13 +196,6 @@
                 const selectedDate = $(this).data("date");
                 $("#selectedDate").val(selectedDate);
             }
-        });
-
-        // 禁用過去的日期和休假日期樣式
-        $(".disabled").css({
-            "pointer-events": "none",
-            "background-color": "#f0f0f0",
-            "color": "#ccc"
         });
     }
 
@@ -213,12 +224,31 @@
         }
     }
 
-    // 設置設計師選擇事件，更新月曆
-    $('#stylist').change(function() {
+    // 月份切換
+    $("#prevMonth").click(function() {
+        if (currentMonth === 0) {
+            currentMonth = 11;
+            currentYear--;
+        } else {
+            currentMonth--;
+        }
+        updateCalendarHeader();
+        generateCalendar();
+    });
+
+    $("#nextMonth").click(function() {
+        if (currentMonth === 11) {
+            currentMonth = 0;
+            currentYear++;
+        } else {
+            currentMonth++;
+        }
+        updateCalendarHeader();
         generateCalendar();
     });
 
     // 預設初始化月曆和時間選擇
+    updateCalendarHeader();
     generateCalendar();
     generateTimeOptions();
 
@@ -253,7 +283,7 @@
         // 最終預約時間格式
         const finalTime = `${finalFormattedDate} ${time}`;
 
-        const message = `[這是您的預約表單]\n[待稍候會幫您確認]\n\n您的姓名：${name}\n您的電話：${phone}\n服務項目：${service}\n預約時間：${finalTime}\n\n備註：\n${remarks}`;
+        const message = `這是您的預約表單\n[待稍候會幫您確認]\n\n您的姓名：${name}\n您的電話：${phone}\n服務項目：${service}\n預約時間：${finalTime}\n\n備註：\n${remarks}`;
 
         liff.sendMessages([{ type: "text", text: message }])
             .then(() => {
