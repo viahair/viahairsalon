@@ -123,7 +123,7 @@
         <div class="month-container">
             <!-- 月份顯示與箭頭 -->
             <span class="arrow-button" id="prev-month">&#9664;</span>
-            <span class="month-text" id="month-display">2 月</span>
+            <span class="month-text" id="month-display">2月</span>
             <span class="arrow-button" id="next-month">&#9654;</span>
         </div>
 
@@ -193,11 +193,11 @@
         for (let day = 1; day <= daysInMonth; day++) {
             const date = new Date(year, month, day);
             const isPastDate = date < today; // 判斷是否是過去的日期
-            const formattedDate = ${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')};
+            const formattedDate = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
             const isHoliday = holidays[selectedStylist] && holidays[selectedStylist].includes(formattedDate);
             const className = isPastDate || isHoliday ? 'disabled' : 'calendar-day'; // 給過去的日期和休假日期加上禁用樣式
 
-            $('#calendar').append(<div class="${className}" data-day="${day}" data-date="${formattedDate}">${day}</div>);
+            $('#calendar').append(`<div class="${className}" data-day="${day}" data-date="${formattedDate}">${day}</div>`);
         }
 
         // 點擊日期選擇
@@ -212,7 +212,7 @@
         });
 
         // 更新月份顯示
-        document.getElementById("month-display").textContent = ${month + 1}月;
+        document.getElementById("month-display").textContent = `${month + 1}月`;
     }
 
     // 切換月份
@@ -232,37 +232,8 @@
         generateCalendar();
     });
 
-    // 生成時間選擇方塊
-    function generateTimeOptions() {
-        const startTime = 10; // 9:00
-        const endTime = 17; // 17:30
-        const timeSelect = document.getElementById("time");
-
-        // 清空時間選項
-        timeSelect.innerHTML = "";
-
-        for (let hour = startTime; hour <= endTime; hour++) {
-            const hour24 = String(hour).padStart(2, '0'); // 確保時間格式是24小時，並補足前導零
-            const times = [
-                ${hour24}:00,  // 以24小時制顯示
-                ${hour24}:30   // 以24小時制顯示
-            ];
-            
-            times.forEach(time => {
-                const option = document.createElement("option");
-                option.value = time;
-                option.text = time;
-                timeSelect.appendChild(option);
-            });
-        }
-    }
-
-
-    
-
-    // 預設初始化月曆和時間選擇
+    // 預設初始化月曆
     generateCalendar();
-    generateTimeOptions();
 
     // 提交預約
     async function submitReservation() {
@@ -290,12 +261,12 @@
         const formattedDate = new Date(date);
         const month = String(formattedDate.getMonth() + 1).padStart(2, '0');  // 月份補0
         const day = String(formattedDate.getDate()).padStart(2, '0');  // 日期補0
-        const finalFormattedDate = ${month}/${day};
+        const finalFormattedDate = `${month}/${day}`;
 
         // 最終預約時間格式
-        const finalTime = ${finalFormattedDate} ${time};
+        const finalTime = `${finalFormattedDate} ${time}`;
 
-        const message = 這是您的預約表單\n[待稍候會幫您確認]\n\n您的姓名：${name}\n您的電話：${phone}\n服務項目：${service}\n預約時間：${finalTime}\n\n備註：\n${remarks};
+        const message = `這是您的預約表單\n[待稍候會幫您確認]\n\n您的姓名：${name}\n您的電話：${phone}\n服務項目：${service}\n預約時間：${finalTime}\n\n備註：\n${remarks}`;
 
         liff.sendMessages([{ type: "text", text: message }])
             .then(() => {
