@@ -322,17 +322,6 @@ const holidays = {
             return;
         }
 
-setTimeout(function() {
-    document.getElementById("name").value = "";
-    document.getElementById("phone").value = "";
-    document.getElementById("remarks").value = "";
-    document.getElementById("selectedDate").value = "";
-    document.getElementById("time").value = "";
-    document.getElementById("service").value = "";
-
-    // 進行畫面關閉或其他操作
-    window.close(); // 或是你其他的關閉畫面邏輯
-}, 500);  // 模擬2秒鐘的發送過程
     
         
         // 格式化日期為 mm/dd 的格式
@@ -346,8 +335,22 @@ setTimeout(function() {
 
         const message = `這是您的預約表單\n[待稍候會幫您確認]\n\n設計師    ：${stylist}\n您的姓名：${name}\n您的電話：${phone}\n服務項目：${service}\n預約時間：${finalTime}\n\n備註：\n${remarks}`;
 
+
+setTimeout(function() {
+    document.getElementById("name").value = "";
+    document.getElementById("phone").value = "";
+    document.getElementById("remarks").value = "";
+    document.getElementById("selectedDate").value = "";
+    document.getElementById("time").value = "";
+    document.getElementById("service").value = "";
+
+    // 進行畫面關閉或其他操作
+    window.close(); // 或是你其他的關閉畫面邏輯
+}, 500);  // 模擬2秒鐘的發送過程
+
+        
         liff.sendMessages([{ type: "text", text: message }])
-            .then(() => {              
+            .then(() => {                        
                 liff.closeWindow();
             })
             .catch(err => console.error("發送訊息錯誤", err));
