@@ -316,20 +316,6 @@ const holidays = {
         const remarks = document.getElementById("remarks").value;
 
 
-    setTimeout(() => {
-        // 清空表單
-        document.getElementById("name").value = "";
-        document.getElementById("phone").value = "";
-        document.getElementById("remarks").value = "";
-        document.getElementById("selectedDate").value = "";
-        document.getElementById("time").value = "";
-        document.getElementById("service").value = "";
-
-        
-    }, 500);  // 延遲 0.5 秒鐘的發送過程
-
-
-
         
         if (!stylist || !name || !phone || !service || !date || !time) {
             alert("有欄位未填寫");
