@@ -143,30 +143,30 @@
     <label for="phone">* 您 的 電 話</label>
     <input type="text" id="phone" placeholder="">
 
-<label for="service">* 服 務 項 目</label>
-<select id="service">
-    <option value="" selected disabled>請選擇服務項目</option>
-    <option value="洗髮">[洗髮] 造型+基礎保養</option>
-    <option value="剪髮">[剪髮] 洗+基礎保養</option>
-    <option value="兒童剪髮">[兒童剪髮] 可洗或不洗</option>    
-    <option value="染髮">[染髮] 洗+基礎保養</option>
-    <option value="補髮根">[補髮根] 洗+基礎保養</option>    
-    <option value="燙髮">[燙髮] 剪+基礎保養</option>
-    <option value="護髮">[護髮] 洗+深層保養</option>
-    <option value="頭皮">[頭皮] 洗+基礎保養</option>
-    <option value="其它">[其他] 在下方備註填寫</option>
-    <option value="----">-----[組合套組]-----</option>    
-    <option value="A組合">[A組合]:剪+護</option>    
-    <option value="B組合">[B組合]:剪+染</option>    
-    <option value="C組合">[C組合]:補髮根+護</option>    
-    <option value="D組合">[D組合]:燙+護</option>    
-    <option value="E組合">[E組合]:燙+染</option>    
-</select>
+    <label for="service">* 服 務 項 目</label>
+    <select id="service">
+        <option value="" selected disabled>請選擇服務項目</option>
+        <option value="洗髮">[洗髮] 造型+基礎保養</option>
+        <option value="剪髮">[剪髮] 洗+基礎保養</option>
+        <option value="兒童剪髮">[兒童剪髮] 可洗或不洗</option>    
+        <option value="染髮">[染髮] 洗+基礎保養</option>
+        <option value="補髮根">[補髮根] 洗+基礎保養</option>    
+        <option value="燙髮">[燙髮] 剪+基礎保養</option>
+        <option value="護髮">[護髮] 洗+深層保養</option>
+        <option value="頭皮">[頭皮] 洗+基礎保養</option>
+        <option value="其它">[其他] 在下方備註填寫</option>
+        <option value="----">-----[組合套組]-----</option>    
+        <option value="A組合">[A組合]:剪+護</option>    
+        <option value="B組合">[B組合]:剪+染</option>    
+        <option value="C組合">[C組合]:補髮根+護</option>    
+        <option value="D組合">[D組合]:燙+護</option>    
+        <option value="E組合">[E組合]:燙+染</option>    
+    </select>
 
     <label for="remarks">備 註</label>
     <textarea id="remarks" rows="2" placeholder="若選擇 '其它'，請在此填寫"></textarea>
 
-    <button onclick="submitReservation()">確認送出</button>
+    <button id="submit-button" onclick="submitReservation()">確認送出</button>
 
 <script>
 // 設計師的休假日期
@@ -186,157 +186,104 @@ const holidays = {
     ]
 };
 
+let currentMonth = new Date().getMonth();
+let selectedDate = null;
 
-    let currentMonth = new Date().getMonth();
-    let currentYear = new Date().getFullYear();
+// 初始化日曆
+function updateCalendar() {
+    const daysInMonth = new Date(2025, currentMonth + 1, 0).getDate();
+    const firstDay = new Date(2025, currentMonth, 1).getDay();
 
-    // 更新月曆
-    function generateCalendar() {
-        const month = currentMonth;
-        const year = currentYear;
-        const daysInMonth = new Date(year, month + 1, 0).getDate();
-        const firstDayOfMonth = new Date(year, month, 1).getDay();
-        const today = new Date();  // 當天的日期
-        today.setHours(0, 0, 0, 0);  // 只保留日期，不包含時間
-        const selectedStylist = document.getElementById("stylist").value;
+    const calendarElement = document.getElementById('calendar');
+    calendarElement.innerHTML = '';
 
-        // 清空月曆
-        $('#calendar').empty();
+    const monthDisplay = document.getElementById('month-display');
+    monthDisplay.textContent = `${currentMonth + 1}月`;
 
-        // 顯示週日到週六
-        const daysOfWeek = ["日", "一", "二", "三", "四", "五", "六"];
-        daysOfWeek.forEach(day => {
-            $('#calendar').append('<div style="text-align:center; font-weight:bold">' + day + '</div>');
-        });
+    // 填充空白格
+    for (let i = 0; i < firstDay; i++) {
+        calendarElement.appendChild(document.createElement('div'));
+    }
 
-        // 空白填充，確保日期排正確
-        for (let i = 0; i < firstDayOfMonth; i++) {
-            $('#calendar').append('<div></div>');
+    // 填充日期格
+    for (let i = 1; i <= daysInMonth; i++) {
+        const date = new Date(2025, currentMonth, i);
+        const dateString = date.toISOString().split('T')[0]; // YYYY-MM-DD 格式
+        const dayDiv = document.createElement('div');
+        dayDiv.textContent = i;
+        dayDiv.classList.add('calendar-day');
+
+        // 檢查是否為休假日
+        if (holidays["不指定設計師"].includes(dateString)) {
+            dayDiv.classList.add('disabled');
         }
 
-        // 填充日期並設置禁用過去的日期和休假日期
-        for (let day = 1; day <= daysInMonth; day++) {
-            const date = new Date(year, month, day);
-            const isPastDate = date < today; // 判斷是否是過去的日期
-            const formattedDate = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-            const isHoliday = holidays[selectedStylist] && holidays[selectedStylist].includes(formattedDate);
-            const className = isPastDate || isHoliday ? 'disabled' : 'calendar-day'; // 給過去的日期和休假日期加上禁用樣式
-
-            $('#calendar').append(`<div class="${className}" data-day="${day}" data-date="${formattedDate}">${day}</div>`);
-        }
-
-        // 點擊日期選擇
-        $(".calendar-day").on('click', function() {
-            if (!$(this).hasClass("disabled")) {
-                $(".calendar-day").removeClass("selected");
-                $(this).addClass("selected");
-                const selectedDay = $(this).data("day");
-                const selectedDate = $(this).data("date");
-                $("#selectedDate").val(selectedDate);
+        // 點擊選擇日期
+        dayDiv.addEventListener('click', function() {
+            if (dayDiv.classList.contains('disabled')) return;
+            if (selectedDate) {
+                document.querySelector(`.selected`).classList.remove('selected');
             }
+            dayDiv.classList.add('selected');
+            selectedDate = dateString;
+            document.getElementById('selectedDate').value = selectedDate;
+            updateTimeOptions();
         });
 
-        // 更新月份顯示
-        document.getElementById("month-display").textContent = `${month + 1} 月`;
+        calendarElement.appendChild(dayDiv);
     }
+}
 
-    // 切換月份
-    $("#prev-month").click(function() {
-        currentMonth = (currentMonth === 0) ? 11 : currentMonth - 1;
-        if (currentMonth === 11) {
-            currentYear--;
-        }
-        generateCalendar();
+// 更新時間選項
+function updateTimeOptions() {
+    const timeSelect = document.getElementById('time');
+    timeSelect.innerHTML = '';
+
+    if (!selectedDate) return;
+
+    const availableTimes = ["09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00"];
+
+    availableTimes.forEach(time => {
+        const option = document.createElement('option');
+        option.value = time;
+        option.textContent = time;
+        timeSelect.appendChild(option);
     });
+}
 
-    $("#next-month").click(function() {
-        currentMonth = (currentMonth === 11) ? 0 : currentMonth + 1;
-        if (currentMonth === 0) {
-            currentYear++;
-        }
-        generateCalendar();
-    });
+// 提交預約
+function submitReservation() {
+    const submitButton = document.getElementById('submit-button');
+    submitButton.disabled = true;  // 禁用按鈕
+    submitButton.textContent = '正在處理...';  // 顯示處理中的文字
 
-    // 生成時間選擇方塊
-    function generateTimeOptions() {
-        const startTime = 10; // 10:00
-        const endTime = 18; // 18:00
-        const timeSelect = document.getElementById("time");
-
-        // 清空時間選項
-        timeSelect.innerHTML = "";
-
-        for (let hour = startTime; hour <= endTime; hour++) {
-            const hour24 = String(hour).padStart(2, '0'); // 確保時間格式是24小時，並補足前導零
-            const times = [
-                `${hour24}:00`,  // 以24小時制顯示
-                `${hour24}:30`   // 以24小時制顯示
-            ];
-
-        // 移除 18:30 時段
-        if (hour === 18) {
-            times.pop(); // 只保留到 18:00
-        }            
-            
-            times.forEach(time => {
-                const option = document.createElement("option");
-                option.value = time;
-                option.text = time;
-                timeSelect.appendChild(option);
-            });
-        }
-    }
-
-    // 設置設計師選擇事件，更新月曆
-    $('#stylist').change(function() {
-        generateCalendar();
-    });
-
+    const stylist = document.getElementById('stylist').value;
+    const name = document.getElementById('name').value;
+    const phone = document.getElementById('phone').value;
+    const service = document.getElementById('service').value;
+    const remarks = document.getElementById('remarks').value;
     
-    // 預設初始化月曆
-    generateCalendar();
-    generateTimeOptions();
-    // 提交預約
-    async function submitReservation() {
-        await liff.init({ liffId: "2006886942-gQ2J88nv" });
+    const reservationData = {
+        stylist: stylist,
+        date: selectedDate,
+        time: document.getElementById('time').value,
+        name: name,
+        phone: phone,
+        service: service,
+        remarks: remarks
+    };
 
-        if (!liff.isLoggedIn()) {
-            liff.login();
-            return; // 如果沒登入，則停止後續操作
-        }
-        
-        const stylist = document.getElementById("stylist").value;
-        const name = document.getElementById("name").value;
-        const phone = document.getElementById("phone").value;
-        const service = document.getElementById("service").value;
-        const date = document.getElementById("selectedDate").value; // 選擇的日期
-        const time = document.getElementById("time").value;
-        const remarks = document.getElementById("remarks").value;
-      
-        if (!stylist || !name || !phone || !service || !date || !time) {
-            alert("有欄位未填寫");
-            return;
-        }
+    // 模擬提交
+    setTimeout(() => {
+        alert("預約已成功提交！");
+        submitButton.disabled = false;  // 重新啟用按鈕
+        submitButton.textContent = '確認送出';  // 恢復原來的文字
+    }, 2000);  // 模擬處理時間
+}
 
-    
-        
-        // 格式化日期為 mm/dd 的格式
-        const formattedDate = new Date(date);
-        const month = String(formattedDate.getMonth() + 1).padStart(2, '0');  // 月份補0
-        const day = String(formattedDate.getDate()).padStart(2, '0');  // 日期補0
-        const finalFormattedDate = `${month}/${day}`;
+// 初始化日曆
+updateCalendar();
 
-        // 最終預約時間格式
-        const finalTime = `${finalFormattedDate} ${time}`;
-
-        const message = `這是您的預約表單\n[待稍候會幫您確認]\n\n設計師    ：${stylist}\n您的姓名：${name}\n您的電話：${phone}\n服務項目：${service}\n預約時間：${finalTime}\n\n備註：\n${remarks}`;
-
-
-        liff.sendMessages([{ type: "text", text: message }])
-            .then(() => {
-                liff.closeWindow();
-            })
-            .catch(err => console.error("發送訊息錯誤", err));
 </script>
 
 </body>
