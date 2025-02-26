@@ -305,6 +305,8 @@ const holidays = {
             return; // 如果沒登入，則停止後續操作
         }
 
+
+        
         const stylist = document.getElementById("stylist").value;
         const name = document.getElementById("name").value;
         const phone = document.getElementById("phone").value;
@@ -313,11 +315,32 @@ const holidays = {
         const time = document.getElementById("time").value;
         const remarks = document.getElementById("remarks").value;
 
+
+    setTimeout(() => {
+        // 清空表單
+        document.getElementById("name").value = "";
+        document.getElementById("phone").value = "";
+        document.getElementById("remarks").value = "";
+        document.getElementById("selectedDate").value = "";
+        document.getElementById("time").value = "";
+        document.getElementById("service").value = "";
+
+        
+    }, 500);  // 延遲 0.5 秒鐘的發送過程
+}
+
+
+        
         if (!stylist || !name || !phone || !service || !date || !time) {
             alert("有欄位未填寫");
             return;
         }
 
+        // 禁用按鈕
+        const submitButton = document.querySelector("button");
+        submitButton.disabled = true;
+
+        
         // 格式化日期為 mm/dd 的格式
         const formattedDate = new Date(date);
         const month = String(formattedDate.getMonth() + 1).padStart(2, '0');  // 月份補0
