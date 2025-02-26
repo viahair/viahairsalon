@@ -146,21 +146,15 @@
 <label for="service">* 服 務 項 目</label>
 <select id="service">
     <option value="" selected disabled>請選擇服務項目</option>
-    <option value="洗髮">[洗髮] 造型+基礎保養</option>
-    <option value="剪髮">[剪髮] 洗+基礎保養</option>
-    <option value="兒童剪髮">[兒童剪髮] 可洗或不洗</option>    
-    <option value="染髮">[染髮] 洗+基礎保養</option>
-    <option value="補髮根">[補髮根] 洗+基礎保養</option>    
-    <option value="燙髮">[燙髮] 剪+基礎保養</option>
-    <option value="護髮">[護髮] 洗+深層保養</option>
-    <option value="頭皮">[頭皮] 洗+基礎保養</option>
-    <option value="其它">[其他] 在下方備註填寫</option>
-    <option value="----">-----[組合套組]-----</option>    
-    <option value="A組合">[A組合]:剪+護</option>    
-    <option value="B組合">[B組合]:剪+染</option>    
-    <option value="C組合">[C組合]:補髮根+護</option>    
-    <option value="D組合">[D組合]:燙+護</option>    
-    <option value="E組合">[E組合]:燙+染</option>    
+    <option value="洗髮">[洗髮]:造型+基礎保養</option>
+    <option value="剪髮">[剪髮]:洗+基礎保養</option>
+    <option value="兒童剪髮">[兒童剪髮]:可洗或不洗</option>    
+    <option value="染髮">[染髮]:洗髮+基礎保養</option>
+    <option value="補髮根">[補髮根]:洗髮+基礎保養</option>    
+    <option value="燙髮">[燙髮]:剪髮+基礎保養</option>
+    <option value="護髮">[護髮]:洗髮+深層保養</option>
+    <option value="頭皮">[頭皮]:洗髮+基礎保養</option>
+    <option value="其它">[其他]:在下方備註填寫</option>
 </select>
 
     <label for="remarks">備 註</label>
@@ -305,12 +299,6 @@ const holidays = {
             return; // 如果沒登入，則停止後續操作
         }
 
-    const submitButton = document.getElementById('submit-button');
-    
-    // 禁用按鈕並改變按鈕文字
-    submitButton.disabled = true;
-    submitButton.textContent = '正在處理...';
-        
         const stylist = document.getElementById("stylist").value;
         const name = document.getElementById("name").value;
         const phone = document.getElementById("phone").value;
@@ -324,16 +312,6 @@ const holidays = {
             return;
         }
 
-    // 模擬表單提交
-    setTimeout(() => {
-        alert("預約已成功提交！");
-        // 在提交後恢復按鈕
-        submitButton.disabled = false;
-        submitButton.textContent = '確認送出';
-    }, 500);  // 模擬提交延遲
-}        
-
-        
         // 格式化日期為 mm/dd 的格式
         const formattedDate = new Date(date);
         const month = String(formattedDate.getMonth() + 1).padStart(2, '0');  // 月份補0
