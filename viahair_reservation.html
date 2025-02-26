@@ -321,9 +321,7 @@ const holidays = {
         const remarks = document.getElementById("remarks").value;
       
         if (!stylist || !name || !phone || !service || !date || !time) {
-            alert("有欄位未填寫");
-            submitButton.disabled = false;  // 恢復按鈕
-            submitButton.textContent = '確認送出';            
+            alert("有欄位未填寫");         
             return;
         }
 
@@ -348,9 +346,9 @@ const holidays = {
             .catch(err => console.error("發送訊息錯誤", err));
 
         // 在提交後恢復按鈕
-        submitButton.disabled = false;
-        submitButton.textContent = '確認送出';
-    }, 500);  // 模擬提交延遲
+        //submitButton.disabled = false;
+        //submitButton.textContent = '確認送出';
+    //}, 500);  // 模擬提交延遲
         
     }
 </script>
