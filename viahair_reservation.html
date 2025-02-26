@@ -304,6 +304,13 @@ const holidays = {
             liff.login();
             return; // 如果沒登入，則停止後續操作
         }
+
+
+    const submitButton = document.getElementById('submit-button');
+    
+    // 禁用按鈕並改變按鈕文字
+    submitButton.disabled = true;
+    submitButton.textContent = '正在處理...';
         
         const stylist = document.getElementById("stylist").value;
         const name = document.getElementById("name").value;
@@ -315,6 +322,8 @@ const holidays = {
       
         if (!stylist || !name || !phone || !service || !date || !time) {
             alert("有欄位未填寫");
+            submitButton.disabled = false;  // 恢復按鈕
+            submitButton.textContent = '確認送出';            
             return;
         }
 
@@ -338,6 +347,11 @@ const holidays = {
             })
             .catch(err => console.error("發送訊息錯誤", err));
 
+        // 在提交後恢復按鈕
+        submitButton.disabled = false;
+        submitButton.textContent = '確認送出';
+    }, 500);  // 模擬提交延遲
+        
     }
 </script>
 
