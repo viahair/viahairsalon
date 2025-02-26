@@ -166,7 +166,7 @@
     <label for="remarks">備 註</label>
     <textarea id="remarks" rows="2" placeholder="若選擇 '其它'，請在此填寫"></textarea>
 
-    <button onclick="submitReservation()">確認送出</button>
+    <button id="submitButton" onclick="submitReservation()">確認送出</button>
 
 <script>
 // 設計師的休假日期
@@ -186,174 +186,110 @@ const holidays = {
     ]
 };
 
+let currentMonth = new Date().getMonth();
+let currentYear = new Date().getFullYear();
 
-    let currentMonth = new Date().getMonth();
-    let currentYear = new Date().getFullYear();
+// 禁用按鈕，防止重複點擊
+function disableSubmitButton() {
+    const button = document.getElementById("submitButton");
+    button.disabled = true;
+    button.style.backgroundColor = "#ccc";
+    button.innerHTML = "請稍後...";
+}
 
-    // 更新月曆
-    function generateCalendar() {
-        const month = currentMonth;
-        const year = currentYear;
-        const daysInMonth = new Date(year, month + 1, 0).getDate();
-        const firstDayOfMonth = new Date(year, month, 1).getDay();
-        const today = new Date();  // 當天的日期
-        today.setHours(0, 0, 0, 0);  // 只保留日期，不包含時間
-        const selectedStylist = document.getElementById("stylist").value;
+// 恢復按鈕
+function enableSubmitButton() {
+    const button = document.getElementById("submitButton");
+    button.disabled = false;
+    button.style.backgroundColor = "#333";
+    button.innerHTML = "確認送出";
+}
 
-        // 清空月曆
-        $('#calendar').empty();
-
-        // 顯示週日到週六
-        const daysOfWeek = ["日", "一", "二", "三", "四", "五", "六"];
-        daysOfWeek.forEach(day => {
-            $('#calendar').append('<div style="text-align:center; font-weight:bold">' + day + '</div>');
-        });
-
-        // 空白填充，確保日期排正確
-        for (let i = 0; i < firstDayOfMonth; i++) {
-            $('#calendar').append('<div></div>');
+// 顯示日期選擇，並禁用設計師的休假日期
+function displayCalendar() {
+    const calendarElement = document.getElementById("calendar");
+    const monthDisplay = document.getElementById("month-display");
+    const selectedDateInput = document.getElementById("selectedDate");
+    
+    let startDate = new Date(currentYear, currentMonth, 1);
+    let endDate = new Date(currentYear, currentMonth + 1, 0);
+    let daysInMonth = endDate.getDate();
+    
+    calendarElement.innerHTML = "";
+    monthDisplay.innerText = `${currentMonth + 1}月`;
+    
+    // 顯示每個日期
+    for (let day = 1; day <= daysInMonth; day++) {
+        const date = new Date(currentYear, currentMonth, day);
+        const dateStr = date.toISOString().split("T")[0];
+        const dayElement = document.createElement("div");
+        dayElement.innerText = day;
+        dayElement.classList.add("calendar-day");
+        
+        // 禁用休假日期
+        if (holidays["不指定設計師"].includes(dateStr) || holidays["Michelle"].includes(dateStr) || holidays["Mia"].includes(dateStr)) {
+            dayElement.classList.add("disabled");
         }
-
-        // 填充日期並設置禁用過去的日期和休假日期
-        for (let day = 1; day <= daysInMonth; day++) {
-            const date = new Date(year, month, day);
-            const isPastDate = date < today; // 判斷是否是過去的日期
-            const formattedDate = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-            const isHoliday = holidays[selectedStylist] && holidays[selectedStylist].includes(formattedDate);
-            const className = isPastDate || isHoliday ? 'disabled' : 'calendar-day'; // 給過去的日期和休假日期加上禁用樣式
-
-            $('#calendar').append(`<div class="${className}" data-day="${day}" data-date="${formattedDate}">${day}</div>`);
-        }
-
-        // 點擊日期選擇
-        $(".calendar-day").on('click', function() {
-            if (!$(this).hasClass("disabled")) {
-                $(".calendar-day").removeClass("selected");
-                $(this).addClass("selected");
-                const selectedDay = $(this).data("day");
-                const selectedDate = $(this).data("date");
-                $("#selectedDate").val(selectedDate);
-            }
+        
+        // 點擊選擇日期
+        dayElement.addEventListener("click", function () {
+            selectedDateInput.value = dateStr;
+            updateCalendar();
         });
+        
+        calendarElement.appendChild(dayElement);
+    }
+}
 
-        // 更新月份顯示
-        document.getElementById("month-display").textContent = `${month + 1} 月`;
+// 重新更新選擇的日期
+function updateCalendar() {
+    const calendarDays = document.querySelectorAll(".calendar-day");
+    const selectedDate = document.getElementById("selectedDate").value;
+    
+    calendarDays.forEach(function (dayElement) {
+        if (dayElement.innerText === new Date(selectedDate).getDate().toString()) {
+            dayElement.classList.add("selected");
+        } else {
+            dayElement.classList.remove("selected");
+        }
+    });
+}
+
+// 處理預約送出
+function submitReservation() {
+    disableSubmitButton();
+
+    const name = document.getElementById("name").value;
+    const phone = document.getElementById("phone").value;
+    const stylist = document.getElementById("stylist").value;
+    const date = document.getElementById("selectedDate").value;
+    const time = document.getElementById("time").value;
+    const service = document.getElementById("service").value;
+    const remarks = document.getElementById("remarks").value;
+
+    if (!name || !phone || !stylist || !date || !time || !service) {
+        alert("所有必填欄位必須填寫！");
+        enableSubmitButton();
+        return;
     }
 
-    // 切換月份
-    $("#prev-month").click(function() {
-        currentMonth = (currentMonth === 0) ? 11 : currentMonth - 1;
-        if (currentMonth === 11) {
-            currentYear--;
-        }
-        generateCalendar();
+    // 使用 LIFF SDK 處理 LINE 訊息回傳
+    liff.init({ liffId: "YOUR_LIFF_ID" }, () => {
+        liff.sendMessages([{
+            type: "text",
+            text: `預約成功\n姓名：${name}\n電話：${phone}\n設計師：${stylist}\n日期：${date}\n時間：${time}\n服務項目：${service}\n備註：${remarks}`
+        }]).then(() => {
+            alert("預約已送出！");
+            enableSubmitButton();
+        }).catch((err) => {
+            console.error("Error sending message: ", err);
+            enableSubmitButton();
+        });
     });
+}
 
-    $("#next-month").click(function() {
-        currentMonth = (currentMonth === 11) ? 0 : currentMonth + 1;
-        if (currentMonth === 0) {
-            currentYear++;
-        }
-        generateCalendar();
-    });
-
-    // 生成時間選擇方塊
-    function generateTimeOptions() {
-        const startTime = 10; // 10:00
-        const endTime = 18; // 18:00
-        const timeSelect = document.getElementById("time");
-
-        // 清空時間選項
-        timeSelect.innerHTML = "";
-
-        for (let hour = startTime; hour <= endTime; hour++) {
-            const hour24 = String(hour).padStart(2, '0'); // 確保時間格式是24小時，並補足前導零
-            const times = [
-                `${hour24}:00`,  // 以24小時制顯示
-                `${hour24}:30`   // 以24小時制顯示
-            ];
-
-        // 移除 18:30 時段
-        if (hour === 18) {
-            times.pop(); // 只保留到 18:00
-        }            
-            
-            times.forEach(time => {
-                const option = document.createElement("option");
-                option.value = time;
-                option.text = time;
-                timeSelect.appendChild(option);
-            });
-        }
-    }
-
-    // 設置設計師選擇事件，更新月曆
-    $('#stylist').change(function() {
-        generateCalendar();
-    });
-
-    
-    // 預設初始化月曆
-    generateCalendar();
-    generateTimeOptions();
-    // 提交預約
-    async function submitReservation() {
-        await liff.init({ liffId: "2006886942-gQ2J88nv" });
-
-        if (!liff.isLoggedIn()) {
-            liff.login();
-            return; // 如果沒登入，則停止後續操作
-        }
-
-
-        
-        const stylist = document.getElementById("stylist").value;
-        const name = document.getElementById("name").value;
-        const phone = document.getElementById("phone").value;
-        const service = document.getElementById("service").value;
-        const date = document.getElementById("selectedDate").value; // 選擇的日期
-        const time = document.getElementById("time").value;
-        const remarks = document.getElementById("remarks").value;
-
-
-        
-        if (!stylist || !name || !phone || !service || !date || !time) {
-            alert("有欄位未填寫");
-            return;
-        }
-
-    
-        
-        // 格式化日期為 mm/dd 的格式
-        const formattedDate = new Date(date);
-        const month = String(formattedDate.getMonth() + 1).padStart(2, '0');  // 月份補0
-        const day = String(formattedDate.getDate()).padStart(2, '0');  // 日期補0
-        const finalFormattedDate = `${month}/${day}`;
-
-        // 最終預約時間格式
-        const finalTime = `${finalFormattedDate} ${time}`;
-
-        const message = `這是您的預約表單\n[待稍候會幫您確認]\n\n設計師    ：${stylist}\n您的姓名：${name}\n您的電話：${phone}\n服務項目：${service}\n預約時間：${finalTime}\n\n備註：\n${remarks}`;
-
-
-// 發送訊息
-liff.sendMessages([{ type: "text", text: message }])
-    .then(() => { 
-        // 訊息發送成功後延遲執行清空表單和關閉視窗
-        setTimeout(function() {
-            // 清空表單內容
-            document.getElementById("name").value = "";
-            document.getElementById("phone").value = "";
-            document.getElementById("remarks").value = "";
-            document.getElementById("selectedDate").value = "";
-            document.getElementById("time").value = "";
-            document.getElementById("service").value = "";
-
-            // 關閉視窗
-            liff.closeWindow();
-        }, 2000);  // 模擬2秒鐘的發送過程
-    })
-    .catch(err => console.error("OOPS", err));
+// 初始化日曆
+displayCalendar();
 </script>
 
 </body>
