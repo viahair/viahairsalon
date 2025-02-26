@@ -318,8 +318,7 @@
         const message = `這是您的預約表單\n[待稍候會幫您確認]\n\n您的姓名：${name}\n您的電話：${phone}\n服務項目：${service}\n預約時間：${finalTime}\n\n備註：\n${remarks}`;
 
         liff.sendMessages([{ type: "text", text: message }])
-            .then(() => {
-                alert("預約表格已送出 等候確認");                                
+            .then(() => {                         
                 liff.closeWindow();
             })
             .catch(err => console.error("發送訊息錯誤", err));
