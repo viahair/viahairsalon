@@ -322,15 +322,17 @@ const holidays = {
             return;
         }
 
-    // 送出後清除表單欄位
+setTimeout(function() {
     document.getElementById("name").value = "";
     document.getElementById("phone").value = "";
-    document.getElementById("service").value = "";
     document.getElementById("remarks").value = "";
     document.getElementById("selectedDate").value = "";
     document.getElementById("time").value = "";
-    // 清除選擇的日期和時間
-    $(".calendar-day").removeClass("selected");
+    document.getElementById("service").value = "";
+
+    // 進行畫面關閉或其他操作
+    window.close(); // 或是你其他的關閉畫面邏輯
+}, 500);  // 模擬2秒鐘的發送過程
     
         
         // 格式化日期為 mm/dd 的格式
