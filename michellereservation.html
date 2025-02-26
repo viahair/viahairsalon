@@ -319,6 +319,7 @@
 
         liff.sendMessages([{ type: "text", text: message }])
             .then(() => {
+                alert("預約表格已送出 等候確認");                                
                 liff.closeWindow();
             })
             .catch(err => console.error("發送訊息錯誤", err));
