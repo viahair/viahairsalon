@@ -297,6 +297,29 @@ const holidays = {
     generateCalendar();
     generateTimeOptions();
     
+document.addEventListener("DOMContentLoaded", function () {
+    // 初始化 LIFF
+    liff.init({ liffId: "2006886942-gQ2J88nv" })
+        .then(() => {
+            // 檢查是否已登入
+            if (liff.isLoggedIn()) {
+                // 取得使用者的資料
+                liff.getProfile().then(profile => {
+                    // 將 LINE 的暱稱填入表單中的名稱欄位
+                    document.getElementById("name").value = profile.displayName;
+                }).catch(err => {
+                    console.error("取得 profile 失敗", err);
+                });
+            } else {
+                // 若未登入則跳轉到登入頁面
+                liff.login();
+            }
+        })
+        .catch(err => {
+            console.error("LIFF 初始化失敗", err);
+        });
+});
+
 // 提交預約
 async function submitReservation() {
     try {
@@ -346,6 +369,7 @@ async function submitReservation() {
         console.error("發送訊息錯誤", err);
     }
 }
+
 
 </script>
 
