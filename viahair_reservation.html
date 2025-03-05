@@ -356,7 +356,7 @@ async function submitReservation() {
         const finalTime = `${finalFormattedDate} ${time}`;
 
         // 組成訊息
-        const message = `這是您的預約表單\n[待稍候會幫您確認]\n\n設計師    ：${stylist}\n您的姓名：${name}\n您的電話：${phone}\n服務項目：${service}\n預約時間：${finalTime}\n\n備註：\n${remarks}`;
+        const message = `ⅥΔ 這是您的預約表單\nⅥΔ 待稍候會幫您確認\n\n設計師    ：${stylist}\n您的姓名：${name}\n您的電話：${phone}\n服務項目：${service}\n預約時間：${finalTime}\n\n備註：\n${remarks}`;
 
         // 發送訊息
         await liff.sendMessages([{ type: "text", text: message }]);
