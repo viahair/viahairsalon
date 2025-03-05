@@ -284,8 +284,35 @@
     // 預設初始化月曆
     generateCalendar();
     generateTimeOptions();
-    // 提交預約
-    async function submitReservation() {
+
+    
+document.addEventListener("DOMContentLoaded", function () {
+    // 初始化 LIFF
+    liff.init({ liffId: "2006886946-3o52ppko" })
+        .then(() => {
+            // 檢查是否已登入
+            if (liff.isLoggedIn()) {
+                // 取得使用者的資料
+                liff.getProfile().then(profile => {
+                    // 將 LINE 的暱稱填入表單中的名稱欄位
+                    document.getElementById("name").value = profile.displayName;
+                }).catch(err => {
+                    console.error("取得 profile 失敗", err);
+                });
+            } else {
+                // 若未登入則跳轉到登入頁面
+                liff.login();
+            }
+        })
+        .catch(err => {
+            console.error("LIFF 初始化失敗", err);
+        });
+});
+
+// 提交預約
+async function submitReservation() {
+    try {
+        // 初始化 LIFF
         await liff.init({ liffId: "2006886946-3o52ppko" });
 
         if (!liff.isLoggedIn()) {
@@ -293,6 +320,7 @@
             return; // 如果沒登入，則停止後續操作
         }
 
+        // 取得表單欄位資料
         const stylist = document.getElementById("stylist").value;
         const name = document.getElementById("name").value;
         const phone = document.getElementById("phone").value;
@@ -301,12 +329,17 @@
         const time = document.getElementById("time").value;
         const remarks = document.getElementById("remarks").value;
 
+        // 確認必填欄位
         if (!stylist || !name || !phone || !service || !date || !time) {
             alert("有欄位未填寫");
             return;
         }
 
-        // 格式化日期為 mm/dd 的格式
+        // 取得使用者的基本資料
+        const profile = await liff.getProfile();
+        document.getElementById("name").value = profile.displayName;
+
+        // 格式化日期為 mm/dd 格式
         const formattedDate = new Date(date);
         const month = String(formattedDate.getMonth() + 1).padStart(2, '0');  // 月份補0
         const day = String(formattedDate.getDate()).padStart(2, '0');  // 日期補0
@@ -315,14 +348,16 @@
         // 最終預約時間格式
         const finalTime = `${finalFormattedDate} ${time}`;
 
-        const message = `這是您的預約表單\n[待稍候會幫您確認]\n\n您的姓名：${name}\n您的電話：${phone}\n服務項目：${service}\n預約時間：${finalTime}\n\n備註：\n${remarks}`;
+        // 組成訊息
+        const message = `---------▽🅘△--------\n┌ 這是您的預約表單 ┐\n└ 待稍候會幫您確認 ┘\n\n您的姓名：${name}\n您的電話：${phone}\n服務項目：${service}\n預約時間：${finalTime}\n\n備註：\n${remarks}`;
 
-        liff.sendMessages([{ type: "text", text: message }])
-            .then(() => {                         
-                liff.closeWindow();
-            })
-            .catch(err => console.error("發送訊息錯誤", err));
+        // 發送訊息
+        await liff.sendMessages([{ type: "text", text: message }]);
+        liff.closeWindow();
+    } catch (err) {
+        console.error("發送訊息錯誤", err);
     }
+}
 </script>
 
 </body>
