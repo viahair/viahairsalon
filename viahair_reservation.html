@@ -319,7 +319,6 @@ document.addEventListener("DOMContentLoaded", function () {
         });
 });
 
-// 提交預約
 async function submitReservation() {
     try {
         // 初始化 LIFF
@@ -358,11 +357,73 @@ async function submitReservation() {
         // 最終預約時間格式
         const finalTime = `${finalFormattedDate} ${time}`;
 
-        // 組成訊息
-        const message = `---------▽🅘△--------\n┌ 這是您的預約表單 ┐\n└ 待稍候會幫您確認 ┘\n\n設計師    ：${stylist}\n您的姓名：${name}\n您的電話：${phone}\n服務項目：${service}\n預約時間：${finalTime}\n\n備註：\n${remarks}`;
+        // 構建 Flex Message 內容
+        const flexMessage = {
+            type: "flex",
+            altText: "您的預約確認訊息",
+            contents: {
+                type: "bubble",
+                size: "mega",
+                header: {
+                    type: "box",
+                    layout: "horizontal",
+                    contents: [
+                        {
+                            type: "text",
+                            text: "預約確認",
+                            weight: "bold",
+                            size: "xl",
+                            color: "#ffffff"
+                        }
+                    ]
+                },
+                body: {
+                    type: "box",
+                    layout: "vertical",
+                    contents: [
+                        {
+                            type: "text",
+                            text: `設計師：${stylist}`,
+                            size: "sm",
+                            wrap: true
+                        },
+                        {
+                            type: "text",
+                            text: `姓名：${name}`,
+                            size: "sm",
+                            wrap: true
+                        },
+                        {
+                            type: "text",
+                            text: `電話：${phone}`,
+                            size: "sm",
+                            wrap: true
+                        },
+                        {
+                            type: "text",
+                            text: `服務項目：${service}`,
+                            size: "sm",
+                            wrap: true
+                        },
+                        {
+                            type: "text",
+                            text: `預約時間：${finalTime}`,
+                            size: "sm",
+                            wrap: true
+                        },
+                        {
+                            type: "text",
+                            text: `備註：${remarks}`,
+                            size: "sm",
+                            wrap: true
+                        }
+                    ]
+                }
+            }
+        };
 
-        // 發送訊息
-        await liff.sendMessages([{ type: "text", text: message }]);
+        // 發送 Flex Message
+        await liff.sendMessages([flexMessage]);
         liff.closeWindow();
     } catch (err) {
         console.error("發送訊息錯誤", err);
