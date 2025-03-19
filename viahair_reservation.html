@@ -321,223 +321,94 @@ document.addEventListener("DOMContentLoaded", function () {
 
 async function submitReservation() {
     try {
-        // 初始化 LIFF
         await liff.init({ liffId: "2006886942-gQ2J88nv" });
 
         if (!liff.isLoggedIn()) {
             liff.login();
-            return; // 如果沒登入，則停止後續操作
+            return;
         }
 
-        // 取得表單欄位資料
         const stylist = document.getElementById("stylist").value;
         const name = document.getElementById("name").value;
         const phone = document.getElementById("phone").value;
         const service = document.getElementById("service").value;
-        const date = document.getElementById("selectedDate").value; // 選擇的日期
+        const date = document.getElementById("selectedDate").value;
         const time = document.getElementById("time").value;
-        const remarks = document.getElementById("remarks").value; // 備註欄位，這是可選的
+        const remarks = document.getElementById("remarks").value;
 
-        // 確認必填欄位
         if (!stylist || !name || !phone || !service || !date || !time) {
             alert("有欄位未填寫");
             return;
         }
 
-        // 取得使用者的基本資料
-        const profile = await liff.getProfile();
-        document.getElementById("name").value = profile.displayName;
-
-        // 格式化日期為 mm/dd 格式
         const formattedDate = new Date(date);
-        const month = String(formattedDate.getMonth() + 1).padStart(2, '0');  // 月份補0
-        const day = String(formattedDate.getDate()).padStart(2, '0');  // 日期補0
+        const month = String(formattedDate.getMonth() + 1).padStart(2, '0');
+        const day = String(formattedDate.getDate()).padStart(2, '0');
         const finalFormattedDate = `${month}/${day}`;
-
-        // 最終預約時間格式
         const finalTime = `${finalFormattedDate} ${time}`;
 
-        // 構建 Flex Message 內容
         const flexMessage = {
             type: "flex",
-            altText: "[這是您的預約表單 稍後幫您確認]",
+            altText: "預約表單",
             contents: {
                 type: "bubble",
-                size: "mega",
-                hero: {
-                    type: "image",
-                    url: "https://drive.google.com/uc?export=view&id=1mTcDD4ioMLTdpBx_Zhspyt-rWV1NETYr",
-                    align: "center",
-                    gravity: "center",
-                    size: "full",
-                    aspectRatio: "20:13",
-                    margin: "lg"
-                },
                 body: {
                     type: "box",
                     layout: "vertical",
                     spacing: "md",
                     contents: [
                         {
+                            type: "text",
+                            text: "預 約 表 單",
+                            weight: "bold",
+                            size: "xxl",
+                            color: "#A3927CFF",
+                            align: "center",
+                            gravity: "center",
+                            style: "italic"
+                        },
+                        {
                             type: "box",
                             layout: "vertical",
                             spacing: "sm",
-                            margin: "lg",
                             contents: [
-                                {
-                                    type: "box",
-                                    layout: "baseline",
-                                    spacing: "sm",
-                                    contents: [
-                                        {
-                                            type: "text",
-                                            text: "設計師",
-                                            weight: "bold",
-                                            size: "md",
-                                            color: "#0E3240FF",
-                                            flex: 3
-                                        },
-                                        {
-                                            type: "text",
-                                            text: stylist,
-                                            size: "sm",
-                                            color: "#666666",
-                                            wrap: true,
-                                            flex: 7
-                                        }
-                                    ]
-                                },
-                                {
-                                    type: "box",
-                                    layout: "baseline",
-                                    spacing: "sm",
-                                    contents: [
-                                        {
-                                            type: "text",
-                                            text: "姓名",
-                                            weight: "bold",
-                                            size: "md",
-                                            color: "#0E3240FF",
-                                            flex: 3
-                                        },
-                                        {
-                                            type: "text",
-                                            text: name,
-                                            size: "sm",
-                                            color: "#666666",
-                                            wrap: true,
-                                            flex: 7
-                                        }
-                                    ]
-                                },
-                                {
-                                    type: "box",
-                                    layout: "baseline",
-                                    spacing: "sm",
-                                    contents: [
-                                        {
-                                            type: "text",
-                                            text: "電話",
-                                            weight: "bold",
-                                            size: "md",
-                                            color: "#0E3240FF",
-                                            flex: 3
-                                        },
-                                        {
-                                            type: "text",
-                                            text: phone,
-                                            size: "sm",
-                                            color: "#666666",
-                                            wrap: true,
-                                            flex: 7
-                                        }
-                                    ]
-                                },
-                                {
-                                    type: "box",
-                                    layout: "baseline",
-                                    spacing: "sm",
-                                    contents: [
-                                        {
-                                            type: "text",
-                                            text: "服務項目",
-                                            weight: "bold",
-                                            size: "md",
-                                            color: "#0E3240FF",
-                                            flex: 3
-                                        },
-                                        {
-                                            type: "text",
-                                            text: service,
-                                            size: "sm",
-                                            color: "#666666",
-                                            wrap: true,
-                                            flex: 7
-                                        }
-                                    ]
-                                },
-                                {
-                                    type: "box",
-                                    layout: "baseline",
-                                    spacing: "sm",
-                                    contents: [
-                                        {
-                                            type: "text",
-                                            text: "預約時間",
-                                            weight: "bold",
-                                            size: "md",
-                                            color: "#0E3240FF",
-                                            flex: 3
-                                        },
-                                        {
-                                            type: "text",
-                                            text: finalTime,
-                                            size: "sm",
-                                            color: "#666666",
-                                            wrap: true,
-                                            flex: 7
-                                        }
-                                    ]
-                                },
-                                // 備註欄位顯示：如果備註欄位有填寫，就顯示備註
-                                remarks && {
-                                    type: "box",
-                                    layout: "baseline",
-                                    spacing: "sm",
-                                    contents: [
-                                        {
-                                            type: "text",
-                                            text: "備註",
-                                            weight: "bold",
-                                            size: "md",
-                                            color: "#0E3240FF",
-                                            flex: 3
-                                        },
-                                        {
-                                            type: "text",
-                                            text: remarks,
-                                            size: "sm",
-                                            color: "#666666",
-                                            wrap: true,
-                                            flex: 7
-                                        }
-                                    ]
-                                }
-                            ].filter(Boolean) // 避免備註欄位為空時，這部分會被過濾掉
+                                { type: "box", layout: "baseline", contents: [
+                                    { type: "text", text: "設 計 師", weight: "bold", size: "lg", color: "#4B4744FF" },
+                                    { type: "text", text: stylist, size: "sm", color: "#9A8A77FF", flex: 1 }
+                                ]},
+                                { type: "box", layout: "baseline", contents: [
+                                    { type: "text", text: "姓 名", weight: "bold", size: "lg", color: "#4B4744FF" },
+                                    { type: "text", text: name, size: "sm", color: "#9A8A77FF", flex: 1 }
+                                ]},
+                                { type: "box", layout: "baseline", contents: [
+                                    { type: "text", text: "電 話", weight: "bold", size: "lg", color: "#4B4744FF" },
+                                    { type: "text", text: phone, size: "sm", color: "#9A8A77FF", flex: 1 }
+                                ]},
+                                { type: "box", layout: "baseline", contents: [
+                                    { type: "text", text: "服 務 項 目", weight: "bold", size: "lg", color: "#4B4744FF" },
+                                    { type: "text", text: service, size: "sm", color: "#9A8A77FF", flex: 1 }
+                                ]},
+                                { type: "box", layout: "baseline", contents: [
+                                    { type: "text", text: "預 約 時 間", weight: "bold", size: "lg", color: "#4B4744FF" },
+                                    { type: "text", text: finalTime, size: "sm", color: "#9A8A77FF", flex: 1 }
+                                ]},
+                                remarks ? { type: "box", layout: "baseline", contents: [
+                                    { type: "text", text: "備 註", weight: "bold", size: "lg", color: "#4B4744FF" },
+                                    { type: "text", text: remarks, size: "sm", color: "#9A8A77FF", flex: 1 }
+                                ]} : null
+                            ].filter(Boolean)
                         }
                     ]
                 }
             }
         };
 
-        // 發送 Flex Message
         await liff.sendMessages([flexMessage]);
         liff.closeWindow();
     } catch (err) {
         console.error("發送訊息錯誤", err);
     }
 }
-
 
 
 
