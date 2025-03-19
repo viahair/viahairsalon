@@ -364,58 +364,165 @@ async function submitReservation() {
             contents: {
                 type: "bubble",
                 size: "mega",
-                header: {
-                    type: "box",
-                    layout: "horizontal",
-                    contents: [
-                        {
-                            type: "text",
-                            text: "預約確認",
-                            weight: "bold",
-                            size: "xl",
-                            color: "#ffffff"
-                        }
-                    ]
+                hero: {
+                    type: "image",
+                    url: "https://drive.google.com/uc?export=view&id=1zAegAcHvTYhrUI1ldODSCdrEMcskIY_N",
+                    align: "center",
+                    gravity: "center",
+                    size: "full",
+                    aspectRatio: "20:13",
+                    margin: "lg"
                 },
                 body: {
                     type: "box",
                     layout: "vertical",
+                    spacing: "md",
                     contents: [
                         {
-                            type: "text",
-                            text: `設計師：${stylist}`,
-                            size: "sm",
-                            wrap: true
-                        },
-                        {
-                            type: "text",
-                            text: `姓名：${name}`,
-                            size: "sm",
-                            wrap: true
-                        },
-                        {
-                            type: "text",
-                            text: `電話：${phone}`,
-                            size: "sm",
-                            wrap: true
-                        },
-                        {
-                            type: "text",
-                            text: `服務項目：${service}`,
-                            size: "sm",
-                            wrap: true
-                        },
-                        {
-                            type: "text",
-                            text: `預約時間：${finalTime}`,
-                            size: "sm",
-                            wrap: true
-                        },
-                        {
-                            type: "text",
-                            text: `備註：${remarks}`,
-                            size: "sm",
-                            wrap: true
+                            type: "box",
+                            layout: "vertical",
+                            spacing: "sm",
+                            margin: "lg",
+                            contents: [
+                                {
+                                    type: "box",
+                                    layout: "baseline",
+                                    spacing: "sm",
+                                    contents: [
+                                        {
+                                            type: "text",
+                                            text: "設計師",
+                                            weight: "bold",
+                                            size: "md",
+                                            color: "#0E3240FF",
+                                            flex: 3
+                                        },
+                                        {
+                                            type: "text",
+                                            text: stylist,
+                                            size: "sm",
+                                            color: "#666666",
+                                            wrap: true,
+                                            flex: 7
+                                        }
+                                    ]
+                                },
+                                {
+                                    type: "box",
+                                    layout: "baseline",
+                                    spacing: "sm",
+                                    contents: [
+                                        {
+                                            type: "text",
+                                            text: "姓名",
+                                            weight: "bold",
+                                            size: "md",
+                                            color: "#0E3240FF",
+                                            flex: 3
+                                        },
+                                        {
+                                            type: "text",
+                                            text: name,
+                                            size: "sm",
+                                            color: "#666666",
+                                            wrap: true,
+                                            flex: 7
+                                        }
+                                    ]
+                                },
+                                {
+                                    type: "box",
+                                    layout: "baseline",
+                                    spacing: "sm",
+                                    contents: [
+                                        {
+                                            type: "text",
+                                            text: "電話",
+                                            weight: "bold",
+                                            size: "md",
+                                            color: "#0E3240FF",
+                                            flex: 3
+                                        },
+                                        {
+                                            type: "text",
+                                            text: phone,
+                                            size: "sm",
+                                            color: "#666666",
+                                            wrap: true,
+                                            flex: 7
+                                        }
+                                    ]
+                                },
+                                {
+                                    type: "box",
+                                    layout: "baseline",
+                                    spacing: "sm",
+                                    contents: [
+                                        {
+                                            type: "text",
+                                            text: "服務項目",
+                                            weight: "bold",
+                                            size: "md",
+                                            color: "#0E3240FF",
+                                            flex: 3
+                                        },
+                                        {
+                                            type: "text",
+                                            text: service,
+                                            size: "sm",
+                                            color: "#666666",
+                                            wrap: true,
+                                            flex: 7
+                                        }
+                                    ]
+                                },
+                                {
+                                    type: "box",
+                                    layout: "baseline",
+                                    spacing: "sm",
+                                    contents: [
+                                        {
+                                            type: "text",
+                                            text: "預約時間",
+                                            weight: "bold",
+                                            size: "md",
+                                            color: "#0E3240FF",
+                                            flex: 3
+                                        },
+                                        {
+                                            type: "text",
+                                            text: finalTime,
+                                            size: "sm",
+                                            color: "#666666",
+                                            wrap: true,
+                                            flex: 7
+                                        }
+                                    ]
+                                },
+                                {
+                                    type: "box",
+                                    layout: "baseline",
+                                    spacing: "sm",
+                                    contents: [
+                                        {
+                                            type: "text",
+                                            text: "備註",
+                                            weight: "bold",
+                                            size: "md",
+                                            color: "#0E3240FF",
+                                            flex: 3
+                                        },
+                                        {
+                                            type: "text",
+                                            text: remarks,
+                                            size: "sm",
+                                            color: "#666666",
+                                            wrap: true,
+                                            flex: 7
+                                        }
+                                    ]
+                                }
+                            ]
                         }
                     ]
                 }
@@ -429,6 +536,7 @@ async function submitReservation() {
         console.error("發送訊息錯誤", err);
     }
 }
+
 
 
 </script>
