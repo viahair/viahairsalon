@@ -347,61 +347,81 @@ async function submitReservation() {
         const finalFormattedDate = `${month}/${day}`;
         const finalTime = `${finalFormattedDate} ${time}`;
 
-        const flexMessage = {
-            type: "flex",
-            altText: "預約表單",
-            contents: {
-                type: "bubble",
-                body: {
+const flexMessage = {
+    type: "flex",
+    altText: "[已填寫訊息，稍後確認通知。]",
+    contents: {
+        type: "bubble",
+        body: {
+            type: "box",
+            layout: "vertical",
+            spacing: "md",
+            contents: [
+                {
+                    type: "text",
+                    text: "預 約 表 單",
+                    weight: "bold",
+                    size: "xxl",
+                    color: "#A3927CFF",
+                    align: "center",
+                    gravity: "center",
+                    style: "italic"
+                },
+                {
                     type: "box",
                     layout: "vertical",
-                    spacing: "md",
+                    spacing: "sm",
                     contents: [
-                        {
-                            type: "text",
-                            text: "預 約 表 單",
-                            weight: "bold",
-                            size: "xxl",
-                            color: "#A3927CFF",
-                            align: "center",
-                            gravity: "center",
-                            style: "italic"
-                        },
-                        {
-                            type: "box",
-                            layout: "vertical",
-                            spacing: "sm",
-                            contents: [
-                                { type: "box", layout: "baseline", contents: [
-                                    { type: "text", text: "設 計 師", weight: "bold", size: "lg", color: "#4B4744FF" },
-                                    { type: "text", text: stylist, size: "sm", color: "#9A8A77FF", flex: 1 }
-                                ]},
-                                { type: "box", layout: "baseline", contents: [
-                                    { type: "text", text: "姓 名", weight: "bold", size: "lg", color: "#4B4744FF" },
-                                    { type: "text", text: name, size: "sm", color: "#9A8A77FF", flex: 1 }
-                                ]},
-                                { type: "box", layout: "baseline", contents: [
-                                    { type: "text", text: "電 話", weight: "bold", size: "lg", color: "#4B4744FF" },
-                                    { type: "text", text: phone, size: "sm", color: "#9A8A77FF", flex: 1 }
-                                ]},
-                                { type: "box", layout: "baseline", contents: [
-                                    { type: "text", text: "服 務 項 目", weight: "bold", size: "lg", color: "#4B4744FF" },
-                                    { type: "text", text: service, size: "sm", color: "#9A8A77FF", flex: 1 }
-                                ]},
-                                { type: "box", layout: "baseline", contents: [
-                                    { type: "text", text: "預 約 時 間", weight: "bold", size: "lg", color: "#4B4744FF" },
-                                    { type: "text", text: finalTime, size: "sm", color: "#9A8A77FF", flex: 1 }
-                                ]},
-                                remarks ? { type: "box", layout: "baseline", contents: [
-                                    { type: "text", text: "備 註", weight: "bold", size: "lg", color: "#4B4744FF" },
-                                    { type: "text", text: remarks, size: "sm", color: "#9A8A77FF", flex: 1 }
-                                ]} : null
-                            ].filter(Boolean)
-                        }
-                    ]
+                        { type: "box", layout: "baseline", contents: [
+                            { type: "text", text: "設 計 師", weight: "bold", size: "lg", color: "#4B4744FF" },
+                            { type: "text", text: stylist, size: "sm", color: "#9A8A77FF", flex: 1 }
+                        ]},
+                        { type: "box", layout: "baseline", contents: [
+                            { type: "text", text: "姓 名", weight: "bold", size: "lg", color: "#4B4744FF" },
+                            { type: "text", text: name, size: "sm", color: "#9A8A77FF", flex: 1 }
+                        ]},
+                        { type: "box", layout: "baseline", contents: [
+                            { type: "text", text: "電 話", weight: "bold", size: "lg", color: "#4B4744FF" },
+                            { type: "text", text: phone, size: "sm", color: "#9A8A77FF", flex: 1 }
+                        ]},
+                        { type: "box", layout: "baseline", contents: [
+                            { type: "text", text: "服 務 項 目", weight: "bold", size: "lg", color: "#4B4744FF" },
+                            { type: "text", text: service, size: "sm", color: "#9A8A77FF", flex: 1 }
+                        ]},
+                        { type: "box", layout: "baseline", contents: [
+                            { type: "text", text: "預 約 時 間", weight: "bold", size: "lg", color: "#4B4744FF" },
+                            { type: "text", text: finalTime, size: "sm", color: "#9A8A77FF", flex: 1 }
+                        ]},
+                        remarks ? { type: "box", layout: "baseline", contents: [
+                            { type: "text", text: "備 註", weight: "bold", size: "lg", color: "#4B4744FF" },
+                            { type: "text", text: remarks, size: "sm", color: "#9A8A77FF", flex: 1 }
+                        ]} : null
+                    ].filter(Boolean)
                 }
-            }
-        };
+            ]
+        },
+        footer: {
+            type: "box",
+            layout: "vertical",
+            spacing: "xl",
+            margin: "sm",
+            backgroundColor: "#C7B39CFF",
+            borderColor: "#FFFFFFFF",
+            contents: [
+                {
+                    type: "text",
+                    text: "已接收訊息，稍後確認通知。",
+                    weight: "bold",
+                    size: "lg",
+                    color: "#FFFFFFFF",
+                    align: "center",
+                    gravity: "center",
+                    contents: []
+                }
+            ]
+        }
+    }
+};
 
         await liff.sendMessages([flexMessage]);
         liff.closeWindow();
