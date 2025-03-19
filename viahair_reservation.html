@@ -336,7 +336,7 @@ async function submitReservation() {
         const service = document.getElementById("service").value;
         const date = document.getElementById("selectedDate").value; // 選擇的日期
         const time = document.getElementById("time").value;
-        const remarks = document.getElementById("remarks").value;
+        const remarks = document.getElementById("remarks").value; // 備註欄位，這是可選的
 
         // 確認必填欄位
         if (!stylist || !name || !phone || !service || !date || !time) {
@@ -499,7 +499,8 @@ async function submitReservation() {
                                         }
                                     ]
                                 },
-                                {
+                                // 備註欄位顯示：如果備註欄位有填寫，就顯示備註
+                                remarks && {
                                     type: "box",
                                     layout: "baseline",
                                     spacing: "sm",
@@ -522,7 +523,7 @@ async function submitReservation() {
                                         }
                                     ]
                                 }
-                            ]
+                            ].filter(Boolean) // 避免備註欄位為空時，這部分會被過濾掉
                         }
                     ]
                 }
@@ -536,6 +537,7 @@ async function submitReservation() {
         console.error("發送訊息錯誤", err);
     }
 }
+
 
 
 
